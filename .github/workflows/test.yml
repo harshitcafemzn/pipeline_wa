@@ -2,19 +2,20 @@ name: Run Tests and Check Coverage
 
 on:
   pull_request:
-    branches: [main]  # or your main dev branch
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'  # or your version
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
@@ -23,4 +24,11 @@ jobs:
 
     - name: Run pytest with coverage
       run: |
-        pytest --cov=app_server tests/ --cov-fail-under=80
+        pytest --cov=app_server tests/ --cov-fail-under=80 --cov-report=term-missing --cov-report=html
+
+    # Upload coverage report as artifact
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: htmlcov/
